@@ -1,0 +1,48 @@
+# Default values for my-go-app-helmchart
+
+namespace: go-app
+
+replicaCount: 12
+
+image:
+  repository: joobypm/go-load-lab
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 32Mi
+  limits:
+    cpu: 250m
+    memory: 64Mi
+
+containerPort: 8080
+
+livenessProbe:
+  path: /livez
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+readinessProbe:
+  path: /readyz
+  initialDelaySeconds: 2
+  periodSeconds: 3
+
+service:
+  type: LoadBalancer
+  port: 80
+
+ingress:
+  enabled: true
+  host: go-app.your-domain.com
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+  path: /
+  pathType: Prefix
+
+hpa:
+  enabled: true
+  minReplicas: 12
+  maxReplicas: 96
+  cpuAverageUtilization: 50

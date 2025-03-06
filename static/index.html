@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Simple Load Testing UI</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <h1>Simple Load Testing UI</h1>
+        <p class="desc">
+            This page provides a basic interface to test your server's load endpoints.
+            Adjust the parameters below, then click the relevant button.
+        </p>
+
+        <!-- CPU Load Section -->
+        <section>
+            <h2>CPU Load ( /havy-call )</h2>
+            <div class="field">
+                <label for="cpuInput">CPU (millicores)</label>
+                <input type="text" id="cpuInput" value="100m" placeholder="e.g. 100m = 0.1 CPU" />
+            </div>
+            <div class="field">
+                <label for="durationInput">Duration (seconds)</label>
+                <input type="number" id="durationInput" value="5" min="1" />
+            </div>
+            <button id="cpuButton">Start CPU Load</button>
+            <pre class="result" id="cpuResult"></pre>
+        </section>
+
+        <!-- Wait Section -->
+        <section>
+            <h2>Wait ( /wait )</h2>
+            <div class="field">
+                <label for="waitTimeInput">Time (milliseconds)</label>
+                <input type="number" id="waitTimeInput" value="100" min="0" />
+            </div>
+            <button id="waitButton">Call /wait</button>
+            <pre class="result" id="waitResult"></pre>
+        </section>
+
+        <!-- Paginated Items Section -->
+        <section>
+            <h2>Paginated Items ( /items )</h2>
+            <div class="field">
+                <label for="offsetInput">Offset</label>
+                <input type="number" id="offsetInput" value="0" min="0" />
+            </div>
+            <div class="field">
+                <label for="limitInput">Limit</label>
+                <input type="number" id="limitInput" value="10" min="1" />
+            </div>
+            <button id="itemsButton">Fetch Items</button>
+            <pre class="result" id="itemsResult"></pre>
+        </section>
+    </div>
+
+    <script>
+        // Helper function to handle requests with a loading state
+        async function doRequest(button, resultElem, url) {
+            button.disabled = true;
+            resultElem.textContent = "Loading...";
+
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                resultElem.textContent = text;
+            } catch (err) {
+                resultElem.textContent = "Error: " + err.toString();
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // CPU Load
+        document.getElementById('cpuButton').addEventListener('click', () => {
+            const cpu = document.getElementById('cpuInput').value;
+            const duration = document.getElementById('durationInput').value;
+            const url = `/havy-call?cpu=${cpu}&duration=${duration}`;
+
+            const button = document.getElementById('cpuButton');
+            const resultElem = document.getElementById('cpuResult');
+            doRequest(button, resultElem, url);
+        });
+
+        // Wait
+        document.getElementById('waitButton').addEventListener('click', () => {
+            const time = document.getElementById('waitTimeInput').value;
+            const url = `/wait?time=${time}`;
+
+            const button = document.getElementById('waitButton');
+            const resultElem = document.getElementById('waitResult');
+            doRequest(button, resultElem, url);
+        });
+
+        // Paginated Items
+        document.getElementById('itemsButton').addEventListener('click', async () => {
+            const offset = document.getElementById('offsetInput').value;
+            const limit = document.getElementById('limitInput').value;
+            const url = `/items?offset=${offset}&limit=${limit}`;
+
+            const button = document.getElementById('itemsButton');
+            const resultElem = document.getElementById('itemsResult');
+            button.disabled = true;
+            resultElem.textContent = "Loading...";
+
+            try {
+                const res = await fetch(url);
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    resultElem.textContent = `Error: ${res.status} - ${errorText}`;
+                } else {
+                    const data = await res.json();
+                    resultElem.textContent = JSON.stringify(data, null, 2);
+                }
+            } catch (err) {
+                resultElem.textContent = "Error: " + err.toString();
+            } finally {
+                button.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

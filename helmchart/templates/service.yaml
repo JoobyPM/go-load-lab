@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-app-service
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: go-app
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: go-app
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.containerPort }}
+      protocol: TCP

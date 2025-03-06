@@ -1,0 +1,6 @@
+apiVersion: v2
+name: my-go-app-helmchart
+description: A Helm chart to deploy the Go Load Lab application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
