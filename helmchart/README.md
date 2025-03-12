@@ -35,14 +35,14 @@ This directory contains a **Helm chart** to deploy the [Go Load Lab](https://git
      ```bash
      microk8s helm3 install go-load-lab ./helmchart \
        --set image.repository=localhost:32000/go-load-lab \
-       --set image.tag="1.0.0"
+       --set image.tag="1.0.1"
      ```
      Alternatively, you can use a local Helm 3 install (without MicroK8s) if you prefer.
 
 4. **Build & push the Docker image** (if you want to customize locally):
    ```bash
-   docker build -t localhost:32000/go-load-lab:1.0.0 .
-   docker push localhost:32000/go-load-lab:1.0.0
+   docker build -t localhost:32000/go-load-lab:1.0.1 .
+   docker push localhost:32000/go-load-lab:1.0.1
    ```
    Or use a Docker Hub repository if you prefer.
 
@@ -51,7 +51,7 @@ This directory contains a **Helm chart** to deploy the [Go Load Lab](https://git
    # Using a local Helm install
    helm install go-load-lab ./helmchart \
      --set image.repository=localhost:32000/go-load-lab \
-     --set image.tag="1.0.0"
+     --set image.tag="1.0.1"
    ```
    The above command:
    - Installs your chart under the release name `go-load-lab`.

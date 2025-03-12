@@ -1,0 +1,92 @@
+{{- $chartName := .Chart.Name -}}
+{{- $releaseName := .Release.Name -}}
+{{- $namespace := .Values.namespace | default "default" -}}
+{{- $serviceType := .Values.service.type | default "ClusterIP" -}}
+
+Thank you for installing {{ $chartName }}!
+
+Release Name: {{ $releaseName }}
+Namespace:    {{ $namespace }}
+
+----------------------------------
+CHART INFORMATION
+----------------------------------
+Chart Version: {{ .Chart.Version }}
+App Version:   {{ .Chart.AppVersion }}
+
+----------------------------------
+STATUS & USAGE
+----------------------------------
+To check the status of your release:
+  helm status {{ $releaseName }}
+
+To list all resources in this release:
+  helm get manifest {{ $releaseName }}
+
+You can also see all resources via kubectl:
+  kubectl get all -n {{ $namespace }} -l app=go-app
+
+{{- if eq $serviceType "LoadBalancer" }}
+----------------------------------
+ACCESSING YOUR APPLICATION (LoadBalancer)
+----------------------------------
+The Service is of type LoadBalancer. Once MetalLB (or your cloud provider) 
+assigns an external IP, you can retrieve it by running:
+
+  kubectl get svc go-app-service -n {{ $namespace }}
+
+Then access the application at:
+  http://<EXTERNAL-IP>:{{ .Values.service.port }}
+
+{{- else if eq $serviceType "NodePort" }}
+----------------------------------
+ACCESSING YOUR APPLICATION (NodePort)
+----------------------------------
+The Service is of type NodePort. You can retrieve the port number by running:
+
+  kubectl get svc go-app-service -n {{ $namespace }}
+
+Then access the application at:
+  http://<NODE-IP>:<NODE-PORT> 
+
+{{- else }}
+----------------------------------
+ACCESSING YOUR APPLICATION (ClusterIP)
+----------------------------------
+The Service is of type ClusterIP. To test within the cluster, you can run 
+a port-forward:
+
+  kubectl port-forward -n {{ $namespace }} svc/go-app-service 8080:{{ .Values.service.port }}
+
+Then open:
+  http://localhost:8080/
+
+{{- end }}
+
+{{- if .Values.ingress.enabled }}
+----------------------------------
+INGRESS CONFIGURATION
+----------------------------------
+An Ingress object named "go-app-ingress" was created.
+Host: {{ .Values.ingress.host }} 
+Path: {{ .Values.ingress.path }}
+PathType: {{ .Values.ingress.pathType }}
+
+If your DNS is configured to route "{{ .Values.ingress.host }}" 
+to your cluster/ingress controller, you can access the app at:
+
+  http://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
+
+{{- end }}
+
+----------------------------------
+NOTES
+----------------------------------
+- If you enabled the HorizontalPodAutoscaler (HPA), you can see it with:
+    kubectl get hpa -n {{ $namespace }}
+
+- To uninstall the release and all its resources:
+    helm uninstall {{ $releaseName }} 
+    kubectl delete namespace {{ $namespace }}    # (If you want to remove the namespace)
+
+Thank you for using {{ $chartName }}!
