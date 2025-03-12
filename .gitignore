@@ -27,3 +27,5 @@ go.work.sum
 .copy
 
 .DS_Store
+
+vm-box/*

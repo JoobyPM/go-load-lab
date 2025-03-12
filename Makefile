@@ -52,7 +52,7 @@ push: check-env
 	docker push $(HUB_USERNAME)/$(REPO_NAME):$(VERSION)
 
 run: check-env
-	docker run -d -p 8080:8080 --name go-load-lab \
+	docker run -d -p 8080:8080 --cpus=2 --name go-load-lab \
 		$(HUB_USERNAME)/$(REPO_NAME):$(VERSION)
 
 buildx: check-env

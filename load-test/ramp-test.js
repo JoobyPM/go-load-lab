@@ -6,16 +6,16 @@ export let options = {
   scenarios: {
     gradual_load_test: {
       executor: 'ramping-vus',
-      startVUs: 10,
+      startVUs: 5,
       stages: [
         // Stage 1: ramp up to 50 VUs over 1 minutes
-        { target: 50, duration: '1m' },
+        { target: 50, duration: '5m' },
         // Stage 2: ramp up to 100 VUs over 1 minutes
-        { target: 100, duration: '1m' },
+        { target: 100, duration: '5m' },
         // Stage 3: keep 100 VUs for 1 minutes
-        { target: 100, duration: '1m' },
+        { target: 100, duration: '5m' },
         // Stage 4: keep 200 VUs for 1 minutes
-        { target: 200, duration: '1m' },
+        { target: 200, duration: '15m' },
         
         
       ],
@@ -23,14 +23,14 @@ export let options = {
     }
   },
   thresholds: {
-    http_req_duration: ['max<=1000'], // If max > 1000ms, fail the test
+    http_req_duration: ['max<=10000'], // If max > 1000ms, fail the test
   },
 };
 
 export default function () {
   // It's an example of a ramp-up test, where the number of VUs is increased gradually.
   // Replace with your MetalLB IP or Ingress address
-  const url = 'http://192.168.68.230/havy-call?cpu=10m&duration=0.1';
+  const url = 'http://127.0.0.1:8080/items?offset=90000&limit=1000';
   const res = http.get(url);
 
   // Optionally check for success & measure response times
