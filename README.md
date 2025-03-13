@@ -2,7 +2,6 @@
 
 A simple Go-based web server designed for Kubernetes and containerization practice. It exposes various endpoints for testing load, latency, liveness/readiness checks, and also serves a small UI for manual load testing.
 
-
 ## Features
 
 - **Static file serving** (via `/`)
@@ -76,25 +75,49 @@ A simple Go-based web server designed for Kubernetes and containerization practi
 
 You can deploy via:
 
-- **Helm**: Recommended. See [helmchart/README.md](./helmchart/README.md) for usage.  
-- **Legacy YAML**: Original manifests in [k8s/](./k8s). You can apply them directly with `kubectl apply -f`.
+- **Helm**: Recommended. See [helmchart/README.md](./helmchart/README.md) for usage, including optional logging with persistent volumes.  
+- **Legacy YAML**: Original manifests in [k8s/](./k8s). You can apply them directly with:
+  ```bash
+  kubectl apply -f k8s/
+  ```
 
 ## HA MicroK8s Setup
 
-For a **highly available MicroK8s cluster** (with multiple control-plane nodes, worker nodes, and an Ingress/LoadBalancer), see [docs/ha-microk8s.md](./docs/ha-microk8s.md).  
+For a **highly available MicroK8s cluster** (with multiple control-plane nodes, worker nodes, and an Ingress/LoadBalancer), see [docs/ha-microk8s.md](./docs/ha-microk8s.md).
 
 ### Running on Your Mac or Home Lab
 
 - You can run MicroK8s in **VirtualBox VMs** on a MacBook (e.g., MacBook Pro M3).  
 - **Minimum** recommended specs for each VM:  
   - **1 vCPU** and **2GB RAM** (absolute minimum)  
-  - But you may find it **optimal** to allocate **2 vCPUs** and **4GB RAM** to each VM if you have enough resources.  
-- Create multiple VMs (e.g., 2 or 3 control-plane nodes + 1 or 2 worker nodes) and join them in a single MicroK8s cluster.  
+  - For better performance, allocate **2 vCPUs** and **4GB RAM** if you have enough resources.  
+- Create multiple VMs (e.g., 2 or 3 control-plane nodes + 1 or 2 worker nodes) and join them in a single MicroK8s cluster.
 
 ## Contributing
 
 - Open issues or PRs if you’d like to extend the application or add new endpoints.
 - For major changes, please open an issue first to discuss.
+
+## Why We Don’t Bundle Longhorn as a Subchart
+
+Longhorn is a **cluster‐level storage solution**. Typically, you install it once (via its own Helm chart or YAML) so **all** workloads in the cluster can use it. We keep storage provisioning (like Longhorn) **separate** from this application chart so users can choose any storage class they prefer. This decoupling avoids unneeded complexity and ensures your cluster’s storage setup remains flexible.
+
+If you want to install Longhorn, see [Longhorn’s official docs](https://longhorn.io/) or use its Helm chart:
+```bash
+helm repo add longhorn https://charts.longhorn.io
+helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace
+```
+
+Then in our Helm chart’s `values.yaml`, set:
+```yaml
+logging:
+  enabled: true
+  persistentVolume:
+    enabled: true
+    storageClass: longhorn
+    size: 1Gi
+```
+…to enable persistent logging with Longhorn or any dynamic provisioner.
 
 ## License
 

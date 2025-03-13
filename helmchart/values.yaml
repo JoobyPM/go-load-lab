@@ -4,6 +4,9 @@ namespace: go-app
 
 replicaCount: 12
 
+# If your run app in multi node, you can set nodeSelector to specific label
+nodeSelector: {}
+
 image:
   repository: joobypm/go-load-lab
   tag: "1.0.1"
@@ -46,3 +49,14 @@ hpa:
   minReplicas: 12
   maxReplicas: 96
   cpuAverageUtilization: 50
+
+#########################################################
+# Optional: Logging configuration
+#########################################################
+logging:
+  enabled: false                  # If true, we'll create a ConfigMap + pass LOG_FILE env
+  logFile: "/app/logs/go-load-lab.log"
+  persistentVolume:
+    enabled: false                # If true, we'll create a PVC for logs
+    storageClass: "longhorn"      # or any other class
+    size: "1Gi"

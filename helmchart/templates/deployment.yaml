@@ -1,3 +1,5 @@
+# helmchart/templates/deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,8 +17,10 @@ spec:
       labels:
         app: go-app
     spec:
+{{- if .Values.nodeSelector }}
       nodeSelector:
-        node.kubernetes.io/microk8s-worker: "microk8s-worker"
+{{ toYaml .Values.nodeSelector | indent 8 }}
+{{- end }}
       containers:
       - name: go-app-container
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -31,6 +35,17 @@ spec:
         ports:
           - containerPort: {{ .Values.containerPort }}
 
+        # (1) If logging.enabled => set LOG_FILE env from ConfigMap
+{{- if .Values.logging.enabled }}
+        env:
+          - name: LOG_FILE
+            valueFrom:
+              configMapKeyRef:
+                name: go-app-logs-config
+                key: LOG_FILE
+{{- end }}
+
+        # (2) Probes
         livenessProbe:
           httpGet:
             path: {{ .Values.livenessProbe.path }}
@@ -44,3 +59,17 @@ spec:
             port: {{ .Values.containerPort }}
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+
+        # (3) Mount the PVC if logging + persistentVolume
+{{- if and .Values.logging.enabled .Values.logging.persistentVolume.enabled }}
+        volumeMounts:
+          - name: logs-volume
+            mountPath: "/app/logs"
+{{- end }}
+
+{{- if and .Values.logging.enabled .Values.logging.persistentVolume.enabled }}
+      volumes:
+        - name: logs-volume
+          persistentVolumeClaim:
+            claimName: go-app-logs-pvc
+{{- end }}
