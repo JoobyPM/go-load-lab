@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  my-go-app-helmchart:
+  - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2025-03-12T23:59:44.230974Z"
+    description: A Helm chart to deploy the Go Load Lab application
+    digest: f10e27619bfc6c759f6b6678d1d367c2493e52c0f279d03b698a06ef98b8149b
+    name: my-go-app-helmchart
+    type: application
+    urls:
+    - https://JoobyPM.github.io/go-load-lab/my-go-app-helmchart-0.1.1.tgz
+    version: 0.1.1
+generated: "2025-03-12T23:59:44.230683Z"
