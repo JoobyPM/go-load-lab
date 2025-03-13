@@ -1,7 +1,5 @@
 # Go Load Lab
-
 A simple Go-based web server designed for Kubernetes and containerization practice. It exposes various endpoints for testing load, latency, liveness/readiness checks, and also serves a small UI for manual load testing.
-
 
 ## Features
 
@@ -76,25 +74,91 @@ A simple Go-based web server designed for Kubernetes and containerization practi
 
 You can deploy via:
 
-- **Helm**: Recommended. See [helmchart/README.md](./helmchart/README.md) for usage.  
-- **Legacy YAML**: Original manifests in [k8s/](./k8s). You can apply them directly with `kubectl apply -f`.
+- **Helm**: Recommended. See [helmchart/README.md](./helmchart/README.md) for usage, including optional logging with persistent volumes.  
+- **Legacy YAML**: Original manifests in [k8s/](./k8s). You can apply them directly with:
+  ```bash
+  kubectl apply -f k8s/
+  ```
+
+### Install from Our Public Helm Repo
+
+We also provide a **hosted** chart at [https://JoobyPM.github.io/go-load-lab](https://JoobyPM.github.io/go-load-lab). To install directly from there:
+
+```bash
+# Add our Helm repository
+helm repo add go-load-lab https://JoobyPM.github.io/go-load-lab
+
+# Update local repository info
+helm repo update
+
+# Search for available charts/versions
+helm search repo go-load-lab
+
+# Install the chart (example: version 0.2.0)
+helm install go-load-lab-chart go-load-lab/go-load-lab-helmchart --version 0.2.0
+```
+
+> You can **customize** parameters (e.g. `replicaCount`, `resources.limits.memory`, etc.) by appending `--set key=value` or editing your own `values.yaml`.
 
 ## HA MicroK8s Setup
 
-For a **highly available MicroK8s cluster** (with multiple control-plane nodes, worker nodes, and an Ingress/LoadBalancer), see [docs/ha-microk8s.md](./docs/ha-microk8s.md).  
+For a **highly available MicroK8s cluster** (with multiple control-plane nodes, worker nodes, and an Ingress/LoadBalancer), see [docs/ha-microk8s.md](./docs/ha-microk8s.md).
 
 ### Running on Your Mac or Home Lab
 
 - You can run MicroK8s in **VirtualBox VMs** on a MacBook (e.g., MacBook Pro M3).  
 - **Minimum** recommended specs for each VM:  
   - **1 vCPU** and **2GB RAM** (absolute minimum)  
-  - But you may find it **optimal** to allocate **2 vCPUs** and **4GB RAM** to each VM if you have enough resources.  
-- Create multiple VMs (e.g., 2 or 3 control-plane nodes + 1 or 2 worker nodes) and join them in a single MicroK8s cluster.  
+  - For better performance, allocate **2 vCPUs** and **4GB RAM** if you have enough resources.  
+- Create multiple VMs (e.g., 2 or 3 control-plane nodes + 1 or 2 worker nodes) and join them in a single MicroK8s cluster.
 
 ## Contributing
 
 - Open issues or PRs if you’d like to extend the application or add new endpoints.
 - For major changes, please open an issue first to discuss.
+
+## Why We Don’t Bundle Longhorn as a Subchart
+
+Longhorn is a **cluster‐level storage solution**. Typically, you install it once (via its own Helm chart or YAML) so **all** workloads in the cluster can use it. We keep storage provisioning (like Longhorn) **separate** from this application chart so users can choose any storage class they prefer. This decoupling avoids unneeded complexity and ensures your cluster’s storage setup remains flexible.
+
+If you want to install Longhorn, see [Longhorn’s official docs](https://longhorn.io/) or use its Helm chart:
+```bash
+helm repo add longhorn https://charts.longhorn.io
+helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace
+```
+
+Then in our Helm chart’s `values.yaml`, set:
+```yaml
+logging:
+  enabled: true
+  persistentVolume:
+    enabled: true
+    storageClass: longhorn
+    size: 1Gi
+```
+…to enable persistent logging with Longhorn or any dynamic provisioner.
+
+## Documentation & Guides
+
+Below is a quick reference to the various docs and guides included in this repository:
+
+- **[Debugging Logs in a Distroless Container](./docs/debug-distroless-logs.md)**  
+  Explains how to view or debug log files when using a minimal (Distroless) base image.
+
+- **[Using kubectl with MicroK8s](./docs/using-kubectl-with-microk8s.md)**  
+  Covers installing and configuring `kubectl` to work with MicroK8s.
+
+- **[HA MicroK8s Cluster Setup](./docs/ha-microk8s.md)**  
+  Shows how to create a highly available MicroK8s cluster, including multi-node and Ingress/LoadBalancer setup.
+
+- **[Linting & Validating the Helm Chart](./docs/helm-lint-validate.md)**  
+  Details using `helm lint`, rendering templates, and validating manifests with external tools.
+
+- **[Longhorn + Go Load Lab Quick Start](./docs/longhorn-quickstart.md)**  
+  Guides you through installing Longhorn and enabling persistent logging for Go Load Lab.
+
+- **[Helm Chart – Go Load Lab](./helmchart/README.md)**  
+  The main README for our Helm chart, including installation, customization, and logging configuration options.
 
 ## License
 

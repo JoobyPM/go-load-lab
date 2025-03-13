@@ -1,0 +1,43 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="256"
+    height="128"
+    viewBox="0 0 256 128"
+    role="img"
+    aria-labelledby="title"
+>
+  <!-- Optional: a <title> element for accessibility -->
+  <title id="title">Go Load Lab</title>
+  
+  <!-- Background rectangle -->
+  <rect
+    x="0"
+    y="0"
+    width="100%"
+    height="100%"
+    fill="#fafafa" />
+
+  <!-- Simple border (optional) -->
+  <rect
+    x="0"
+    y="0"
+    width="100%"
+    height="100%"
+    fill="none"
+    stroke="#00ADD8"
+    stroke-width="4"
+  />
+
+  <!-- Text -->
+  <text
+    x="50%"
+    y="50%"
+    font-size="24"
+    font-family="sans-serif"
+    fill="#333"
+    text-anchor="middle"
+    dominant-baseline="middle"
+  >
+    Go Load Lab
+  </text>
+</svg>

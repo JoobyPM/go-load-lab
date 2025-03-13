@@ -30,7 +30,7 @@ You can also see all resources via kubectl:
 ----------------------------------
 ACCESSING YOUR APPLICATION (LoadBalancer)
 ----------------------------------
-The Service is of type LoadBalancer. Once MetalLB (or your cloud provider) 
+The Service is of type LoadBalancer. Once MetalLB (or your cloud provider)
 assigns an external IP, you can retrieve it by running:
 
   kubectl get svc go-app-service -n {{ $namespace }}
@@ -47,13 +47,13 @@ The Service is of type NodePort. You can retrieve the port number by running:
   kubectl get svc go-app-service -n {{ $namespace }}
 
 Then access the application at:
-  http://<NODE-IP>:<NODE-PORT> 
+  http://<NODE-IP>:<NODE-PORT>
 
 {{- else }}
 ----------------------------------
 ACCESSING YOUR APPLICATION (ClusterIP)
 ----------------------------------
-The Service is of type ClusterIP. To test within the cluster, you can run 
+The Service is of type ClusterIP. To test within the cluster, you can run
 a port-forward:
 
   kubectl port-forward -n {{ $namespace }} svc/go-app-service 8080:{{ .Values.service.port }}
@@ -68,14 +68,30 @@ Then open:
 INGRESS CONFIGURATION
 ----------------------------------
 An Ingress object named "go-app-ingress" was created.
-Host: {{ .Values.ingress.host }} 
+Host: {{ .Values.ingress.host }}
 Path: {{ .Values.ingress.path }}
 PathType: {{ .Values.ingress.pathType }}
 
-If your DNS is configured to route "{{ .Values.ingress.host }}" 
+If your DNS is configured to route "{{ .Values.ingress.host }}"
 to your cluster/ingress controller, you can access the app at:
 
   http://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
+
+{{- end }}
+
+{{- if .Values.logging.enabled }}
+----------------------------------
+LOGGING
+----------------------------------
+File-based logging is enabled. The container reads the LOG_FILE path from
+a ConfigMap named "go-app-logs-config."
+
+LOG_FILE path: {{ .Values.logging.logFile }}
+
+{{- if and .Values.logging.persistentVolume.enabled (hasKey .Values.logging "persistentVolume") }}
+A PersistentVolumeClaim named "go-app-logs-pvc" was created to persist
+the logs at "/app/logs."
+{{- end }}
 
 {{- end }}
 
@@ -86,7 +102,7 @@ NOTES
     kubectl get hpa -n {{ $namespace }}
 
 - To uninstall the release and all its resources:
-    helm uninstall {{ $releaseName }} 
+    helm uninstall {{ $releaseName }}
     kubectl delete namespace {{ $namespace }}    # (If you want to remove the namespace)
 
 Thank you for using {{ $chartName }}!

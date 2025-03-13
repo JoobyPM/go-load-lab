@@ -1,0 +1,19 @@
+# helmchart/templates/pvc-logs.yaml
+
+{{- if and .Values.logging.enabled .Values.logging.persistentVolume.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: go-app-logs-pvc
+  namespace: {{ .Values.namespace }}
+  annotations:
+    # Specify the desired replica count for Longhorn
+    "longhorn.io/numberOfReplicas": {{ .Values.logging.persistentVolume.numberOfReplicas | default "1" | quote }}
+spec:
+  storageClassName: {{ .Values.logging.persistentVolume.storageClass }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.logging.persistentVolume.size }}
+{{- end }}

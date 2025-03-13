@@ -96,6 +96,47 @@ helm install go-load-lab ./helmchart \
   --set hpa.enabled=false
 ```
 
+## Logging to File (Optional)
+
+By default, this chart logs **only** to stdout. If you’d like to log to a file:
+
+1. **Enable logging** in `values.yaml` (or via `--set`) by setting:
+   ```yaml
+   logging:
+     enabled: true
+     logFile: "/app/logs/go-load-lab.log"
+     persistentVolume:
+       enabled: true
+       storageClass: "longhorn"  # Or another StorageClass
+       size: "1Gi"
+   ```
+2. When `logging.enabled=true`, a **ConfigMap** sets `LOG_FILE` in the container environment, and the application writes logs to that path.
+3. If `logging.persistentVolume.enabled=true`, a **PVC** called `go-app-logs-pvc` is created, which gets mounted at `/app/logs`. This makes logs **persistent**.
+4. Make sure your cluster has a dynamic provisioner (like [Longhorn](https://longhorn.io/)) to satisfy the PVC request.
+5. Example Helm install with file logging enabled:
+   ```bash
+   helm install go-load-lab ./helmchart \
+     --set logging.enabled=true \
+     --set logging.logFile=/app/logs/go-load-lab.log \
+     --set logging.persistentVolume.enabled=true \
+     --set logging.persistentVolume.storageClass=longhorn \
+     --set logging.persistentVolume.size=2Gi
+   ```
+
+> **Note**: If you **don’t** enable the logging features, no ConfigMap or PVC is created, and the app logs only to stdout.
+
+## Installing Longhorn (If Needed)
+
+If you want to use **Longhorn** as your dynamic storage provider, you must install it **separately**. For example, via Helm:
+
+```bash
+helm repo add longhorn https://charts.longhorn.io
+helm repo update
+helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace
+```
+
+After it’s installed and running in your cluster, you can reference the **`longhorn`** StorageClass from this chart (as shown above) to automatically provision persistent volumes for logs or other data. We **do not** bundle Longhorn as a subchart because storage solutions are typically cluster-level infrastructure, and many users already have their own storage classes. Keeping storage separate makes this chart more flexible and avoids coupling the application deployment to a specific storage provider.
+
 ## Updating / Uninstalling
 
 - **Upgrade**:
@@ -113,8 +154,10 @@ helm install go-load-lab ./helmchart \
 ```
 helmchart/
 ├── Chart.yaml         # Chart metadata
-├── values.yaml        # Default values (image, replicas, etc.)
+├── values.yaml        # Default values (image, replicas, logging, etc.)
 └── templates/
+    ├── configmap-logs.yaml
+    ├── pvc-logs.yaml
     ├── namespace.yaml
     ├── deployment.yaml
     ├── service.yaml

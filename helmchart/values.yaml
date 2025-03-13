@@ -2,7 +2,19 @@
 
 namespace: go-app
 
-replicaCount: 12
+replicaCount: 6
+
+# If your run app in multi node, you can set nodeSelector to specific label
+nodeSelector: {}
+
+# If your run app in multi node, you can set nodeSelector to specific label
+nodeSelector: {}
+
+podSecurityContext:
+  enabled: true
+  runAsUser: 65532    # Distroless "nonroot" UID (adjust to your image)
+  runAsGroup: 65532   # matching GID
+  fsGroup: 65532      # ensures group ownership of mounted volumes
 
 image:
   repository: joobypm/go-load-lab
@@ -15,7 +27,7 @@ resources:
     memory: 32Mi
   limits:
     cpu: 250m
-    memory: 64Mi
+    memory: 128Mi
 
 containerPort: 8080
 
@@ -43,6 +55,18 @@ ingress:
 
 hpa:
   enabled: true
-  minReplicas: 12
+  minReplicas: 6
   maxReplicas: 96
   cpuAverageUtilization: 50
+
+#########################################################
+# Optional: Logging configuration
+#########################################################
+logging:
+  enabled: false                  # If true, we'll create a ConfigMap + pass LOG_FILE env
+  logFile: "/app/logs/go-load-lab.log"
+  persistentVolume:
+    enabled: false                # If true, we'll create a PVC for logs
+    storageClass: "longhorn"      # or any other class
+    size: "1Gi"
+    numberOfReplicas: 1           # field for controlling replicas

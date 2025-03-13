@@ -1,0 +1,11 @@
+{{- if .Values.logging.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-app-logs-config
+  namespace: {{ .Values.namespace }}
+data:
+  # We store the desired file path in a key "LOG_FILE"
+  # The container will read it via envFrom or env var
+  LOG_FILE: {{ .Values.logging.logFile | quote }}
+{{- end }}
