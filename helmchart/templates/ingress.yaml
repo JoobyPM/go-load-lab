@@ -7,19 +7,34 @@ metadata:
   labels:
     app: go-app
   annotations:
-{{- range $key, $value := .Values.ingress.annotations }}
+    {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: "{{ $value }}"
-{{- end }}
+    {{- end }}
+
+    # If the user specifies a Traefik certresolver, automatically add these:
+    {{- if .Values.ingress.traefikTls.certresolver }}
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: "{{ .Values.ingress.traefikTls.certresolver }}"
+    {{- end }}
+
 spec:
   rules:
-  - host: {{ .Values.ingress.host }}
-    http:
-      paths:
-      - path: {{ .Values.ingress.path }}
-        pathType: {{ .Values.ingress.pathType }}
-        backend:
-          service:
-            name: go-app-service
-            port:
-              number: {{ .Values.service.port }}
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: {{ .Values.ingress.path }}
+            pathType: {{ .Values.ingress.pathType }}
+            backend:
+              service:
+                name: go-app-service
+                port:
+                  number: {{ .Values.service.port }}
+
+  # If traefikTls.certresolver is set, create a tls block referencing the same host
+  {{- if .Values.ingress.traefikTls.certresolver }}
+  tls:
+    - hosts:
+      - {{ .Values.ingress.host }}
+      # secretName is not required; Traefik will handle ACME or custom if no secret is provided
+  {{- end }}
 {{- end }}

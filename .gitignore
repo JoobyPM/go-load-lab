@@ -29,3 +29,4 @@ go.work.sum
 .DS_Store
 
 vm-box/*
+.local/*

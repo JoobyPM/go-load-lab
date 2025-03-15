@@ -12,7 +12,7 @@ metadata:
 spec:
   storageClassName: {{ .Values.logging.persistentVolume.storageClass }}
   accessModes:
-    - ReadWriteOnce
+    - {{ .Values.logging.persistentVolume.accessMode }}  # <-- uses the new 'accessMode' from values.yaml
   resources:
     requests:
       storage: {{ .Values.logging.persistentVolume.size }}

@@ -2,6 +2,6 @@ apiVersion: v2
 name: go-load-lab-helmchart
 description: A Helm chart to deploy the Go Load Lab application
 type: application
-version: 0.2.0
+version: 0.3.0
 appVersion: "1.0.1"
 icon: "https://raw.githubusercontent.com/JoobyPM/go-load-lab/main/docs/assets/go-load-lab.svg"

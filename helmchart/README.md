@@ -84,9 +84,11 @@ Use `--set` or edit `values.yaml` to adjust:
 - **`image.repository`**, **`image.tag`**: Docker image reference.  
 - **`service.type`**: `LoadBalancer`, `ClusterIP`, or `NodePort`.  
 - **`ingress.enabled`**: Toggle Ingress on/off; set your own hostname.  
+- **`ingress.traefikTls.certresolver`**: If you’d like **Traefik** to issue and serve HTTPS certificates automatically, set this to something like `route53resolver` (or your chosen resolver). Doing so adds the Traefik TLS annotations and a `tls:` block referencing your Ingress host.  
 - **`hpa.enabled`**: Enable/disable HorizontalPodAutoscaler, etc.
 
-Example advanced override:
+### Example advanced override
+
 ```bash
 helm install go-load-lab ./helmchart \
   --set replicaCount=3 \
@@ -95,6 +97,22 @@ helm install go-load-lab ./helmchart \
   --set ingress.host=my-custom-domain.com \
   --set hpa.enabled=false
 ```
+
+### Example for Traefik HTTPS
+
+```bash
+helm install go-load-lab ./helmchart \
+  --set ingress.enabled=true \
+  --set ingress.host=my-tls-app.domain.com \
+  --set ingress.traefikTls.certresolver=route53resolver
+```
+
+This automatically adds:
+```
+traefik.ingress.kubernetes.io/router.tls: "true"
+traefik.ingress.kubernetes.io/router.tls.certresolver: "route53resolver"
+```
+…plus a `tls:` block referencing `my-tls-app.domain.com`.
 
 ## Logging to File (Optional)
 

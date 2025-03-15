@@ -77,6 +77,18 @@ to your cluster/ingress controller, you can access the app at:
 
   http://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
 
+{{- if .Values.ingress.traefikTls.certresolver }}
+----------------------------------
+TRAEFIK TLS
+----------------------------------
+Because "ingress.traefikTls.certresolver={{ .Values.ingress.traefikTls.certresolver }}"
+is set, Traefik will attempt to serve HTTPS for the domain:
+  https://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
+
+Be sure your Traefik is configured to handle the chosen certresolver
+(e.g., route53resolver or another).
+{{- end }}
+
 {{- end }}
 
 {{- if .Values.logging.enabled }}
