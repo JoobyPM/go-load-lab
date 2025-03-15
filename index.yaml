@@ -3,6 +3,18 @@ entries:
   go-load-lab-helmchart:
   - apiVersion: v2
     appVersion: 1.0.1
+    created: "2025-03-15T00:19:41.576377Z"
+    description: A Helm chart to deploy the Go Load Lab application
+    digest: d5b3f0f57cdf222c75b43b74a41f34ee7e368e7cd312f8a2ee9ecac9cf5b1c9e
+    icon: https://raw.githubusercontent.com/JoobyPM/go-load-lab/main/docs/assets/go-load-lab.svg
+    name: go-load-lab-helmchart
+    type: application
+    urls:
+    - https://JoobyPM.github.io/go-load-lab/go-load-lab-helmchart-0.3.0.tgz
+    version: 0.3.0
+  go-load-lab-helmchart:
+  - apiVersion: v2
+    appVersion: 1.0.1
     created: "2025-03-13T23:41:09.430185Z"
     description: A Helm chart to deploy the Go Load Lab application
     digest: 8e7e4d28a22434e0ca676cfcbdb3b1f90526f3c3cebf53846430103e1f01dbd7
@@ -23,4 +35,4 @@ entries:
     urls:
     - https://JoobyPM.github.io/go-load-lab/my-go-app-helmchart-0.1.1.tgz
     version: 0.1.1
-generated: "2025-03-13T21:09:51.66031Z"
+generated: "2025-03-15T00:19:41.575946Z"
