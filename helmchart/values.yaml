@@ -7,9 +7,6 @@ replicaCount: 6
 # If your run app in multi node, you can set nodeSelector to specific label
 nodeSelector: {}
 
-# If your run app in multi node, you can set nodeSelector to specific label
-nodeSelector: {}
-
 podSecurityContext:
   enabled: true
   runAsUser: 65532    # Distroless "nonroot" UID (adjust to your image)
@@ -47,11 +44,28 @@ service:
 
 ingress:
   enabled: true
+
+  # The domain you want to serve via Ingress (e.g. go-app.your-domain.com)
   host: go-app.your-domain.com
+
+  # Additional annotations for the Ingress (e.g., NGINX rewrite)
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: "/"
+
+  # Default path and pathType
   path: /
   pathType: Prefix
+
+  # ----------------------------------------------------------------------------
+  # If you want to use Traefik with TLS, set this certresolver value.
+  # For example: "--set ingress.traefikTls.certresolver=route53resolver"
+  # This will automatically add:
+  #   traefik.ingress.kubernetes.io/router.tls: "true"
+  #   traefik.ingress.kubernetes.io/router.tls.certresolver: "route53resolver"
+  # And create a "tls:" block referencing your 'ingress.host'
+  # ----------------------------------------------------------------------------
+  traefikTls:
+    certresolver: ""  # e.g. "route53resolver"
 
 hpa:
   enabled: true
@@ -68,5 +82,14 @@ logging:
   persistentVolume:
     enabled: false                # If true, we'll create a PVC for logs
     storageClass: "longhorn"      # or any other class
+
+    # ----------------------------------------------------------------
+    #  accessMode setting
+    #  The default is "ReadWriteOnce", but for multi-node shared volumes
+    #  (i.e. multiple pods on different nodes) you can set this to "ReadWriteMany".
+    #  Example override: --set logging.persistentVolume.accessMode=ReadWriteMany
+    # ----------------------------------------------------------------
+    accessMode: "ReadWriteOnce"
+
     size: "1Gi"
     numberOfReplicas: 1           # field for controlling replicas

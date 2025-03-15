@@ -24,7 +24,7 @@ var (
 func HydrateCache() {
 	rand.Seed(time.Now().UnixNano())
 
-	const totalItems = 100_0000
+	const totalItems = 1_000_000
 	for i := 0; i < totalItems; i++ {
 		name := fmt.Sprintf("Item-%d-%d", i, rand.Intn(9999))
 		Items = append(Items, Item{ID: i, Name: name})

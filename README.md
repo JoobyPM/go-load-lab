@@ -94,15 +94,15 @@ helm repo update
 # Search for available charts/versions
 helm search repo go-load-lab
 
-# Install the chart (example: version 0.2.0)
-helm install go-load-lab-chart go-load-lab/go-load-lab-helmchart --version 0.2.0
+# Install the chart (example: version 0.3.0)
+helm install go-load-lab-chart go-load-lab/go-load-lab-helmchart --version 0.3.0
 ```
 
 > You can **customize** parameters (e.g. `replicaCount`, `resources.limits.memory`, etc.) by appending `--set key=value` or editing your own `values.yaml`.
 
 ## HA MicroK8s Setup
 
-For a **highly available MicroK8s cluster** (with multiple control-plane nodes, worker nodes, and an Ingress/LoadBalancer), see [docs/ha-microk8s.md](./docs/ha-microk8s.md).
+For a **highly available MicroK8s cluster** (with multiple control-plane nodes, worker nodes, and an Ingress/LoadBalancer), see [docs/infrastructure/ha-microk8s.md](./docs/infrastructure/ha-microk8s.md).
 
 ### Running on Your Mac or Home Lab
 
@@ -142,20 +142,23 @@ logging:
 
 Below is a quick reference to the various docs and guides included in this repository:
 
-- **[Debugging Logs in a Distroless Container](./docs/debug-distroless-logs.md)**  
+- **[Debugging Logs in a Distroless Container](./docs/operations.md#1-debugging-logs-in-a-distroless-container)**  
   Explains how to view or debug log files when using a minimal (Distroless) base image.
 
-- **[Using kubectl with MicroK8s](./docs/using-kubectl-with-microk8s.md)**  
-  Covers installing and configuring `kubectl` to work with MicroK8s.
+- **[Using kubectl with MicroK8s → Merged into “4. Using MicroK8s & Longhorn Quick Start”](./docs/operations.md#4-using-microk8s--longhorn-quick-start)**  
+  Covers installing and configuring `kubectl` with MicroK8s, as well as Longhorn usage for persistence.
 
-- **[HA MicroK8s Cluster Setup](./docs/ha-microk8s.md)**  
+- **[HA MicroK8s Cluster Setup](./docs/infrastructure/ha-microk8s.md)**  
   Shows how to create a highly available MicroK8s cluster, including multi-node and Ingress/LoadBalancer setup.
 
-- **[Linting & Validating the Helm Chart](./docs/helm-lint-validate.md)**  
+- **[Linting & Validating the Helm Chart](./docs/operations.md#2-linting--validating-the-helm-chart)**  
   Details using `helm lint`, rendering templates, and validating manifests with external tools.
 
-- **[Longhorn + Go Load Lab Quick Start](./docs/longhorn-quickstart.md)**  
+- **[Longhorn + Go Load Lab Quick Start](./docs/infrastructure/longhorn-quickstart.md)**  
   Guides you through installing Longhorn and enabling persistent logging for Go Load Lab.
+
+- **[Preparing Infrastructure](./docs/infrastructure/prepare-infra.md)**  
+  High‐level overview for MicroK8s, MetalLB, Longhorn, and optional Traefik before deploying Go Load Lab.
 
 - **[Helm Chart – Go Load Lab](./helmchart/README.md)**  
   The main README for our Helm chart, including installation, customization, and logging configuration options.
